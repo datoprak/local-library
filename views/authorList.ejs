@@ -1,0 +1,19 @@
+<%- include("partials/head.ejs") -%>
+  <body>
+    <%- include("partials/navbar.ejs") -%>
+    <h1><%= title %></h1>
+    <% if(allAuthors.length < 1) { %>
+        <p>There are no authors.</p>
+    <% } else {%>
+       <% allAuthors.forEach(author => {%>
+          <li>
+            <a href=<%= author.url %>><%= author.name %></a>
+            <span>(<%= author.date_of_birth_formatted %> - <%= author.date_of_death_formatted %>)</span>
+          </li>
+      <% }) %>
+    <% } %>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
