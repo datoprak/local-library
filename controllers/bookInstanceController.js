@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const BookInstance = require("../models/bookInstance");
+const mongoose = require("mongoose")
 
 exports.bookInstanceList = asyncHandler(async (req, res, next) => {
   const allBookInstances = await BookInstance.find().populate("book").exec();
@@ -11,7 +12,18 @@ exports.bookInstanceList = asyncHandler(async (req, res, next) => {
 });
 
 exports.bookInstanceDetail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: BookInstance detail: ${req.params.id}`);
+  const err = new Error("Book copy not found.");
+  err.status = 404;
+
+  if (!mongoose.isValidObjectId(req.params.id)) return next(err);
+
+  const bookInstance = await BookInstance.findById(req.params.id)
+    .populate("book")
+    .exec();
+
+  if (!bookInstance) return next(err);
+
+  res.render("bookInstanceDetail", { title: "Book Instance", bookInstance });
 });
 
 exports.bookInstanceCreateGet = asyncHandler(async (req, res, next) => {
