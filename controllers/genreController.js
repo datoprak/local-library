@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Genre = require("../models/genre");
+const Book = require("../models/book");
+const mongoose = require("mongoose");
 
 exports.genreList = asyncHandler(async (req, res, next) => {
   const allGenres = await Genre.find().sort({ name: 1 }).exec();
@@ -7,7 +9,24 @@ exports.genreList = asyncHandler(async (req, res, next) => {
 });
 
 exports.genreDetail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Genre detail: ${req.params.id}`);
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    const err = new Error("Genre not found.");
+    err.status = 404;
+    return next(err);
+  }
+  
+  const [genre, booksInGenre] = await Promise.all([
+    Genre.findById(req.params.id).exec(),
+    Book.find({ genre: req.params.id }, "title summary").exec(),
+  ]);
+
+  if (!genre) {
+    const err = new Error("Genre not found.");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("genreDetail", { title: "Genre Detail", genre, booksInGenre });
 });
 
 exports.genreCreateGet = asyncHandler(async (req, res, next) => {
