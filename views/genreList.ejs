@@ -1,0 +1,18 @@
+<%- include("partials/head.ejs") -%>
+  <body>
+    <%- include("partials/navbar.ejs") -%>
+    <h1><%= title %></h1>
+    <% if(allGenres.length < 1) { %>
+        <p>There are no genres.</p>
+    <% } else {%>
+       <% allGenres.forEach(genre => {%>
+          <li>
+            <a href=<%= genre.url %>><%= genre.name %></a>
+          </li>
+      <% }) %>
+    <% } %>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
