@@ -1,0 +1,17 @@
+<%- include("partials/head.ejs") -%>
+  <body>
+    <%- include("partials/navbar.ejs") -%>
+    <h1><%= title %></h1>
+    <ul>
+      <% allBooks.forEach(book => { %>
+        <li>
+          <a href=<%= book.url %>><%= book.title %></a> 
+          <span>(<%= book.author.name %>)</span> 
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+  </div>
+  </div>
+  </body>
+</html>
