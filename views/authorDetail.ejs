@@ -1,0 +1,26 @@
+<%- include("partials/head.ejs") -%>
+  <body>
+    <%- include("partials/navbar.ejs") -%>
+    <h1>Author: <%= author.name %></h1>
+    <p><%= author.date_of_birth_formatted %> - <%= author.date_of_death_formatted %></p>
+    <div style="margin-left: 20px; margin-top: 20px;">
+      <h4>Books</h4>
+      <dl>
+        <%if (allBooksByAuthor.length < 1 ) { %>
+          <p>This author has no books.</p>
+        <%} else { %>
+          <% allBooksByAuthor.forEach(book => { %>
+            <dt>
+              <a href=<%= book.url %>><%= book.title %></a>
+            </dt>
+            <dd><%= book.summary %></dd>
+          <% }) %>
+        <% } %>
+      </dl>
+    </div>
+
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

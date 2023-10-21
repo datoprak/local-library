@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Author = require("../models/author");
+const Book = require("../models/book");
+const mongoose = require("mongoose")
 
 exports.authorList = asyncHandler(async (req, res, next) => {
   const allAuthors = await Author.find().sort({ family_name: 1 }).exec();
@@ -7,7 +9,23 @@ exports.authorList = asyncHandler(async (req, res, next) => {
 });
 
 exports.authorDetail = asyncHandler(async (req, res, next) => {
-  res.send(`Author detail: ${req.params.id}`);
+  const err = new Error("Author not found.");
+  err.status = 404;
+
+  if (!mongoose.isValidObjectId(req.params.id)) return next(err);
+
+  const [author, allBooksByAuthor] = await Promise.all([
+    Author.findById(req.params.id).exec(),
+    Book.find({ author: req.params.id }, "title summary").exec(),
+  ]);
+
+  if (!author) return next(err);
+
+  res.render("authorDetail", {
+    title: author.name,
+    author,
+    allBooksByAuthor,
+  });
 });
 
 exports.authorCreateGet = asyncHandler(async (req, res, next) => {
