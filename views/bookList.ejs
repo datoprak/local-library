@@ -2,14 +2,18 @@
   <body>
     <%- include("partials/navbar.ejs") -%>
     <h1><%= title %></h1>
-    <ul>
-      <% allBooks.forEach(book => { %>
-        <li>
-          <a href=<%= book.url %>><%= book.title %></a> 
-          <span>(<%= book.author.name %>)</span> 
-        </li>
-      <% }) %>
-    </ul>
+    <% if(allBooks.length < 1) { %>
+      <p>There are no books.</p>
+    <% } else { %>
+      <ul>
+        <% allBooks.forEach(book => { %>
+          <li>
+            <a href=<%= book.url %>><%= book.title %></a> 
+            <span>(<%= book.author.name %>)</span> 
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
   </div>
   </div>
   </div>

@@ -2,23 +2,27 @@
   <body>
     <%- include("partials/navbar.ejs") -%>
     <h1><%= title %></h1>
-    <ul>
-      <% allBookInstances.forEach(value => { %>
-        <li>
-          <a href=<%= value.url %>><%=value.book.title%>: <%=value.imprint%></a> 
-          <% if(value.status === "Available") { %>
-            <span class="text-success"> <%=value.status%> </span>
-          <% } else if(value.status === "Maintenance") { %>
-            <span class="text-danger"><%=value.status%></span>
-          <% } else { %>
-            <span class="text-warning"><%=value.status%></span>
-          <% } %>
-          <% if(value.status !== "Available") { %>
-            <span>Due: <%=value.due_back%></span>
-          <% } %>
-        </li>
-      <% }) %>
-    </ul>
+    <% if(allBookInstances.length < 1) { %>
+      <p>There are no book copies in this library.</p>
+    <% } else { %>
+      <ul>
+        <% allBookInstances.forEach(value => { %>
+          <li>
+            <a href=<%= value.url %>><%=value.book.title%>: <%=value.imprint%></a> 
+            <% if(value.status === "Available") { %>
+              <span class="text-success"> <%=value.status%> </span>
+            <% } else if(value.status === "Maintenance") { %>
+              <span class="text-danger"><%=value.status%></span>
+            <% } else { %>
+              <span class="text-warning"><%=value.status%></span>
+            <% } %>
+            <% if(value.status !== "Available") { %>
+              <span>Due: <%=value.due_back_formatted%></span>
+            <% } %>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
   </div>
   </div>
   </div>
