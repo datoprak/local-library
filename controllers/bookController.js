@@ -1,7 +1,8 @@
 const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Site Home Page");
+  // res.send("NOT IMPLEMENTED: Site Home Page");
+  res.render("index", { title: "library" });
 });
 
 exports.bookList = asyncHandler(async (req, res, next) => {
