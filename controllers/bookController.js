@@ -3,6 +3,7 @@ const Book = require("../models/book");
 const Author = require("../models/author");
 const Genre = require("../models/genre");
 const BookInstance = require("../models/bookInstance");
+const mongoose = require("mongoose")
 
 exports.index = asyncHandler(async (req, res, next) => {
   const [
@@ -39,7 +40,19 @@ exports.bookList = asyncHandler(async (req, res, next) => {
 });
 
 exports.bookDetail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Book detail: ${req.params.id}`);
+  const err = new Error("Book not found.");
+  err.status = 404;
+
+  if (!mongoose.isValidObjectId(req.params.id)) return next(err);
+
+  const [book, bookInstances] = await Promise.all([
+    Book.findById(req.params.id).populate("author").populate("genre").exec(),
+    BookInstance.find({ book: req.params.id }).exec(),
+  ]);
+
+  if (!book) return next(err);
+
+  res.render("bookDetail", { title: book.title, book, bookInstances });
 });
 
 exports.bookCreateGet = asyncHandler(async (req, res, next) => {
