@@ -1,0 +1,81 @@
+<%- include("partials/head.ejs") -%>
+  <body>
+    <%- include("partials/navbar.ejs") -%>
+    <h1>Genre: <%= title %></h1>
+    <form method="POST" action="">
+      <div class="form-group">
+        <label for="book">Book: </label>
+        <select name="book" required id="book" class="form-control">
+          <% allBooks.forEach(book => { %>
+            <option 
+              value="<%= book._id %>"
+              <% if(selectedBook === book._id.toString()) { %>
+                selected
+              <% } %>
+            >
+              <%= book.title %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="imprint">Imprint: </label>
+        <input 
+          type="text" 
+          id="imprint" 
+          class="form-control" 
+          placeholder="Publisher and date information" 
+          name="imprint"
+          value="<%= bookInstance.imprint %>"
+          required
+        >
+        <label for="due_back">Date when book available: </label>
+        <input 
+          type="date" 
+          id="due_back" 
+          class="form-control" 
+          name="due_back"
+          value="<%= bookInstance.due_back_yyyy_mm_dd %>"
+        > 
+      </div>
+      <div class="form-group">
+        <label for="status">Status: </label>
+        <select name="status" id="status" class="form-control" required>
+          <option value="Available"
+            <% if(bookInstance.status === 'Available') { %>
+              selected
+            <% } %>
+          >Available</option>
+          <option value="Loaned"
+            <% if(bookInstance.status === 'Loaned') { %>
+              selected
+            <% } %>
+          >Loaned</option>
+          <option value="Maintenance"
+            <% if(bookInstance.status === 'Maintenance') { %>
+              selected
+            <% } %>
+          >Maintenance</option>
+          <option value="Reserved"
+            <% if(bookInstance.status === 'Reserved') { %>
+              selected
+            <% } %>
+          >Reserved</option>
+        </select>
+      </div>
+      
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+    <% if(errors) { %>
+      <ul>
+      <% errors.forEach(err => { %>
+          <li><%=err.msg%></li>
+     <% }) %>
+      </ul>
+    <% } %>
+
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
