@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const { body, validationResult } = require("express-validator");
 
 exports.authorList = asyncHandler(async (req, res, next) => {
-  const allAuthors = await Author.find().sort({ family_name: 1 }).exec();
+  const allAuthors = await Author.find().sort({ first_name: 1 }).exec();
   res.render("authorList", { title: "Author List", allAuthors });
 });
 

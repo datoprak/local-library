@@ -58,7 +58,7 @@ exports.bookDetail = asyncHandler(async (req, res, next) => {
 
 exports.bookCreateGet = asyncHandler(async (req, res, next) => {
   const [allAuthors, allGenres] = await Promise.all([
-    Author.find().sort({ family_name: 1 }).exec(),
+    Author.find().sort({ first_name: 1 }).exec(),
     Genre.find().exec(),
   ]);
 
@@ -100,7 +100,7 @@ exports.bookCreatePost = [
 
     if (!errors.isEmpty()) {
       const [allAuthors, allGenres] = await Promise.all([
-        Author.find().sort({ family_name: 1 }).exec(),
+        Author.find().sort({ first_name: 1 }).exec(),
         Genre.find().exec(),
       ]);
 
@@ -154,7 +154,7 @@ exports.bookDeletePost = asyncHandler(async (req, res, next) => {
 exports.bookUpdateGet = asyncHandler(async (req, res, next) => {
   const [book, allAuthors, allGenres] = await Promise.all([
     Book.findById(req.params.id).populate("author").populate("genre").exec(),
-    Author.find().exec(),
+    Author.find().sort({ first_name: 1 }).exec(),
     Genre.find().exec(),
   ]);
 
@@ -215,7 +215,7 @@ exports.bookUpdatePost = [
 
     if (!errors.isEmpty()) {
       const [allAuthors, allGenres] = await Promise.all([
-        Author.find().exec(),
+        Author.find().sort({ first_name: 1 }).exec(),
         Genre.find().exec(),
       ]);
 
