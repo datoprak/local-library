@@ -32,7 +32,7 @@
           <%if (value.status !== "Available") { %>
             <p><strong>Due back: </strong><%= value.due_back_formatted %></p>
           <%} %>
-          <p><strong>Id: </strong><a href=<%= value._id %>><%= value._id %></a></p>
+          <p><strong>Id: </strong><a href=<%= value.url %>><%= value._id %></a></p>
         <%}) %>
       <%} %>
     </div>
