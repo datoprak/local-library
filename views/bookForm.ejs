@@ -1,0 +1,77 @@
+<%- include("partials/head.ejs") -%>
+  <body>
+    <%- include("partials/navbar.ejs") -%>
+    <h1>Genre: <%= title %></h1>
+    <form method="POST" action="">
+      
+        <div class="form-group">
+          <label for="title">Title: </label>
+          <input 
+            type="text" 
+            id="title" 
+            class="form-control" 
+            placeholder="Name of book"
+            name="title"
+            required
+            value="<%= book.title %>"
+          >
+        </div>
+        <div class="form-group">
+          <label for="Author">Author: </label>
+          <select 
+            name="author" 
+            id="author" 
+            class="form-control"
+            required
+          >
+          <% allAuthors.forEach(author => { %>
+            <% if(book.author !== "") { %>
+              <option 
+                value="<%= author._id %>" 
+                selected="<% author._id.toString() === book.author._id.toString() %>" 
+              > <%= author.name %>
+              </option>
+           <% } else { %>
+              <option value="<%= author._id %>"><%= author.name %></option>
+           <% }}) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="summary">Summary: </label>
+          <textarea name="summary" id="summary" cols="30" rows="10" class="form-control" placeholder="Summary" required><% if (book.summary === "") { %><% } else { %><%= book.summary %><% } %></textarea>
+        </div>
+        <div class="form-group">
+          <label for="isbn">ISBN: </label>
+          <input type="text" id="isbn" class="form-control" name="isbn" placeholder="ISBN13" required value="<%= book.isbn %>">
+        </div>
+        <div class="form-group">
+          <label>Genre: </label>
+          <div>
+            <% allGenres.forEach(genre => { %>
+              <div style="display: inline; padding-right: 10px;">
+                <input type="checkbox" name="genre" class="checkbox-input" id="<%= genre._id %>" value="<%= genre._id %>"
+                <% if(genre.checked) { %>
+                  checked
+                <% } %>
+                >
+                <label for="<%= genre._id %>"><%= genre.name %></label>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+    <% if(errors) { %>
+      <ul>
+      <% errors.forEach(err => { %>
+          <li><%=err.msg%></li>
+     <% }) %>
+      </ul>
+    <% } %>
+
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

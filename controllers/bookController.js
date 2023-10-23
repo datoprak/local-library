@@ -3,7 +3,8 @@ const Book = require("../models/book");
 const Author = require("../models/author");
 const Genre = require("../models/genre");
 const BookInstance = require("../models/bookInstance");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const { body, validationResult } = require("express-validator");
 
 exports.index = asyncHandler(async (req, res, next) => {
   const [
@@ -56,12 +57,72 @@ exports.bookDetail = asyncHandler(async (req, res, next) => {
 });
 
 exports.bookCreateGet = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book create GET");
+  const [allAuthors, allGenres] = await Promise.all([
+    Author.find().sort({ family_name: 1 }).exec(),
+    Genre.find().exec(),
+  ]);
+
+  const book = { title: "", author: "", summary: "", isbn: "", genre: "" };
+
+  res.render("bookForm", {
+    title: "Create Book",
+    allAuthors,
+    allGenres,
+    book,
+    errors: null,
+  });
 });
 
-exports.bookCreatePost = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book create POST");
-});
+exports.bookCreatePost = [
+  (req, res, next) => {
+    if (!(req.body.genre instanceof Array)) {
+      if (typeof req.body.genre === "undefined") req.body.genre = [];
+      else req.body.genre = new Array(req.body.genre);
+    }
+    next();
+  },
+  body("title", "Title must not be empty").trim().isLength({ min: 1 }).escape(),
+  body("author", "Author must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("summary", "Summary must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("isbn", "ISBN must not be empty").trim().isLength({ min: 1 }).escape(),
+  body("genre.*").escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const { title, author, summary, isbn, genre } = req.body;
+    const book = new Book({ title, author, summary, isbn, genre });
+
+    if (!errors.isEmpty()) {
+      const [allAuthors, allGenres] = await Promise.all([
+        Author.find().sort({ family_name: 1 }).exec(),
+        Genre.find().exec(),
+      ]);
+
+      allGenres.forEach(genre =>
+        book.genre.includes(genre._id)
+          ? (genre.checked = "true")
+          : (genre.checked = "false")
+      );
+
+      res.render("bookForm", {
+        title: "Create Book",
+        allAuthors,
+        allGenres,
+        book,
+        errors: errors.array(),
+      });
+    } else {
+      // await book.save();
+      res.redirect(book.url);
+    }
+  }),
+];
 
 exports.bookDeleteGet = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED: Book delete GET");
