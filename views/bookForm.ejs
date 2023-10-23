@@ -28,8 +28,10 @@
             <% if(book.author !== "") { %>
               <option 
                 value="<%= author._id %>" 
-                selected="<% author._id.toString() === book.author._id.toString() %>" 
-              > <%= author.name %>
+                <% if(author._id.toString() === book.author._id.toString()) { %>
+                  selected
+                <% } %>
+              > <%= author.name %> %>
               </option>
            <% } else { %>
               <option value="<%= author._id %>"><%= author.name %></option>
