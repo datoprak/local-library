@@ -1,7 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const Author = require("../models/author");
 const Book = require("../models/book");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const { body, validationResult } = require("express-validator");
 
 exports.authorList = asyncHandler(async (req, res, next) => {
   const allAuthors = await Author.find().sort({ family_name: 1 }).exec();
@@ -28,13 +29,61 @@ exports.authorDetail = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.authorCreateGet = asyncHandler(async (req, res, next) => {
-  res.send("Author create get");
-});
+exports.authorCreateGet = (req, res, next) => {
+  const author = {
+    first_name: "",
+    family_name: "",
+    date_of_birth: "",
+    date_of_death: "",
+  };
+  res.render("authorForm", { title: "Create Author", author, errors: null });
+};
 
-exports.authorCreatePost = asyncHandler(async (req, res, next) => {
-  res.send("Author create post");
-});
+exports.authorCreatePost = [
+  body("first_name")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("First name must be specified.")
+    .isAlphanumeric()
+    .withMessage("First name has non-alphanumeric characters."),
+  body("family_name")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Family name must be specified")
+    .isAlphanumeric()
+    .withMessage("Family name has non-alphanumeric characters."),
+  body("date_of_birth", "Invalid date of birth")
+    .optional({ values: "falsy" })
+    .isISO8601()
+    .toDate(),
+  body("date_of_death", "Invalid date of death")
+    .optional({ values: "falsy" })
+    .isISO8601()
+    .toDate(),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const { first_name, last_name, date_of_birth, date_of_death } = req.body;
+    const author = new Author({
+      first_name,
+      last_name,
+      date_of_birth,
+      date_of_death,
+    });
+    if (!errors.isEmpty()) {
+      res.render("authorCreate", {
+        title: "Create Author",
+        author,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      await author.save();
+      res.redirect(author.url);
+    }
+  }),
+];
 
 exports.authorDeleteGet = asyncHandler(async (req, res, next) => {
   res.send("Author delete get");
