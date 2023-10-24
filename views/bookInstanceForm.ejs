@@ -9,7 +9,7 @@
           <% allBooks.forEach(book => { %>
             <option 
               value="<%= book._id %>"
-              <% if(selectedBook === book._id.toString()) { %>
+              <% if(selectedBook.toString() === book._id.toString()) { %>
                 selected
               <% } %>
             >
