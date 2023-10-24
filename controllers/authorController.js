@@ -119,9 +119,58 @@ exports.authorDeletePost = asyncHandler(async (req, res, next) => {
 });
 
 exports.authorUpdateGet = asyncHandler(async (req, res, next) => {
-  res.send("Author update get");
+  const author = await Author.findById(req.params.id);
+  if (!author) {
+    const err = new Error("Author not found");
+    err.status = 404;
+    return next(err);
+  }
+  res.render("authorForm", { title: "Update Author", author, errors: null });
 });
 
-exports.authorUpdatePost = asyncHandler(async (req, res, next) => {
-  res.send("Author update post");
-});
+exports.authorUpdatePost = [
+  body("first_name")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("First name must be specified.")
+    .isAlphanumeric()
+    .withMessage("First name has non-alphanumeric characters."),
+  body("family_name")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Family name must be specified")
+    .isAlphanumeric()
+    .withMessage("Family name has non-alphanumeric characters."),
+  body("date_of_birth", "Invalid date of birth")
+    .optional({ values: "falsy" })
+    .isISO8601()
+    .toDate(),
+  body("date_of_death", "Invalid date of death")
+    .optional({ values: "falsy" })
+    .isISO8601()
+    .toDate(),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const { first_name, family_name, date_of_birth, date_of_death } = req.body;
+    const author = new Author({
+      first_name,
+      family_name,
+      date_of_birth,
+      date_of_death,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("authorForm", {
+        title: "Update Author",
+        author,
+        errors: errors.array(),
+      });
+    } else {
+      await Author.findByIdAndUpdate(req.params.id, author);
+      res.redirect(author.url);
+    }
+  }),
+];
