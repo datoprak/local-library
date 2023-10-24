@@ -85,9 +85,32 @@ exports.genreDeletePost = asyncHandler(async (req, res, next) => {
 });
 
 exports.genreUpdateGet = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre update GET");
+  const genre = await Genre.findById(req.params.id);
+  if (!genre) {
+    const err = new Error("Genre not found");
+    err.status = 404;
+    return next(err);
+  }
+  res.render("genreForm", { title: "Update Genre", genre, errors: null });
 });
 
-exports.genreUpdatePost = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre update POST");
-});
+exports.genreUpdatePost = [
+  body("name", "Genre name must contain at least 3 characters")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const genre = new Genre({ name: req.body.name, _id: req.params.id });
+    if (!errors.isEmpty()) {
+      res.render("genreForm", {
+        title: "Update Genre",
+        genre,
+        errors: errors.array(),
+      });
+    } else {
+      await Genre.findByIdAndUpdate(req.params.id, genre);
+      res.redirect(genre.url);
+    }
+  }),
+];
